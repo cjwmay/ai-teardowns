@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 2 · Notion AI: Failure Fallbacks and Provisional Output · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 2 · 2026-10-12</div>
+  <h1 class="zh">Notion AI：出错时的兜底</h1>
+  <h1 class="en">Notion AI: Failure Fallbacks</h1>
+  <p class="lede zh">今天拆什么：Notion AI 生成失败时（网络、超时、额度用尽），怎么保住你的原文 —— 错误态不弹窗，原文无损，内联重试。</p>
+  <p class="lede en">What we're tearing down: when Notion AI generation fails (network, timeout, quota exhausted), how it protects your original text — no modal, zero data loss, inline retry.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>Notion AI 几乎不用数字置信度。它用的是<strong>结构型 calibration</strong>：AI 输出默认永远是 <strong>provisional（暂存的）</strong> —— 生成完必须经过 <code>Replace 替换</code> / <code>Insert below 插入</code> / <code>Discard 丢弃</code> / <code>Try again 重试</code> 这道显式确认，输出才能真正进入你的文档。在你点确认之前，原文一字不动。</p>
+      <ul>
+        <li>calibration 不表达在"AI 有多确定"，而表达在"AI 的输出有多临时"—— 比数字更诚实。</li>
+        <li>代价：每次都要多点一次，用交互成本换确定性。对比 Day 1 的 Copilot：补全一行代码错了删掉就行，所以 calibration 压到一次击键；整段重写会覆盖你的文字，所以必须显式确认 —— <strong>calibration 的成本应该跟出错的代价成正比</strong>。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Notion AI barely uses numeric confidence. Instead it calibrates <strong>structurally</strong>: AI output is always <strong>provisional</strong> by default — after generation it must pass an explicit confirmation step (<code>Replace</code> / <code>Insert below</code> / <code>Discard</code> / <code>Try again</code>) before it truly enters your document. Your original text stays untouched until you confirm.</p>
+      <ul>
+        <li>Calibration is expressed not as "how sure is the AI" but as "how provisional is the AI's output" — more honest than any number.</li>
+        <li>The price: one extra click every time, trading interaction cost for certainty. Compare Day 1's Copilot: a wrong line completion is trivial to delete, so calibration is squeezed into a single keystroke; a full rewrite could overwrite your words, so explicit confirmation is required — <strong>the cost of calibration should scale with the cost of being wrong</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <p>失败时降级是<strong>归零</strong>，不是乱给：</p>
+      <ul>
+        <li>生成中途失败 → 内联显示错误 + Retry，原文一字未动。<strong>最差情况 = "什么都没发生"</strong>，而不是半截残次输出。</li>
+        <li>额度用尽 → 明确告诉你不能用了（附升级路径），而不是静默失败或给残缺结果。</li>
+        <li>错误信息<strong>说什么不说什么</strong>：说发生了什么（生成失败）+ 你能做什么（重试）；不说技术细节（不甩 error code 给用户）、不假装成功（不把半截输出当结果塞给你）。</li>
+        <li>离线时 AI 按钮直接不可用 —— 而不是点下去再失败。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>On failure, degradation <strong>returns to zero</strong> instead of delivering something broken:</p>
+      <ul>
+        <li>Mid-generation failure → inline error + Retry, original text untouched. <strong>The worst case is "nothing happened"</strong>, not a half-baked partial output.</li>
+        <li>Quota exhausted → it tells you plainly that it can't continue (with an upgrade path), instead of failing silently or returning truncated results.</li>
+        <li>What error copy <strong>says and doesn't say</strong>: it says what happened (generation failed) + what you can do (retry); it doesn't dump technical details (no error codes thrown at users) and never pretends success (no passing off partial output as a result).</li>
+        <li>Offline, the AI entry points are simply unavailable — rather than letting you click and fail.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li>生成完的选择行（Replace / Insert below / Discard / Try again / 继续追问）本身就是 override 界面。</li>
+        <li><strong>粒度同构</strong>：AI 按"一次生成"为单位输出，人按"一次生成"接受 / 拒绝 / 重试 —— 和 Day 1 的结论呼应：override 必须和 AI 输出同粒度。</li>
+        <li>重试（Try again）是<strong>第二层 override</strong>：不满意时不是只有"接受"或"丢弃"，还能让 AI 换一个答案 —— "拒绝"和"重做"之间的第三条路。</li>
+        <li>成本极低：一次点击；接受后反悔还有 <code>Cmd+Z</code> 兜底。时机：生成完立刻选，也可以 Discard 稍后再试。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li>The post-generation choice row (Replace / Insert below / Discard / Try again / follow-up prompt) <em>is</em> the override interface.</li>
+        <li><strong>Matching granularity</strong>: the AI outputs in units of "one generation", and the human accepts / rejects / retries per generation — echoing Day 1's conclusion: override must match the AI's output granularity.</li>
+        <li>Try again is a <strong>second layer of override</strong>: when unsatisfied, you're not stuck with "accept" or "discard" — you can ask the AI for another answer. A third path between rejecting and redoing.</li>
+        <li>Cost is minimal: one click; and <code>Cmd+Z</code> still backs you up if you regret accepting. Timing: decide right after generation, or discard and retry later.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>graceful degradation 的第一原则是"永远别动用户已有的东西" —— AI 输出默认 provisional，失败时归零不乱给。以及错误文案公式：只说"发生了什么 + 你能做什么"，不甩技术细节、不假装成功。</p>
+    <p class="en"><strong>Designer takeaway:</strong> The first principle of graceful degradation is "never touch what the user already has" — AI output is provisional by default, and failure degrades to zero, never to something broken. And the error-copy formula: only say "what happened + what you can do"; no technical dumps, no pretending success.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Notion AI 的出错兜底让我学到一条：graceful degradation 从"别丢用户东西"开始 —— 输出永远是 provisional 的，显式确认才写入，所以失败时最差情况就是"什么都没发生"，重试零成本。我在 AI Hub 里把这个做成一条原则：任何 AI 动作失败，用户原文和已有状态必须 100% 无损。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Notion AI's failure fallbacks taught me one rule: graceful degradation starts with "never lose the user's stuff" — output is always provisional, written only on explicit confirmation, so when generation fails the worst case is "nothing happened" and retry costs zero. I turned this into a principle in AI Hub: whenever any AI action fails, the user's original text and existing state must be 100% intact.</p>
+  </div>
+
+  <footer>
+    <a href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+    <span class="zh">Day 3 → Perplexity 的引用标注</span><span class="en">Day 3 → Perplexity's citation markers</span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>

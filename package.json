@@ -1,0 +1,1 @@
+{"description":"One AI product interaction teardown a day — trust calibration, graceful degradation, human override. 中英双语。","devDependencies":{"servor":"^4.0.2"},"name":"ai-teardowns","private":true,"scripts":{"dev":"servor --reload"},"version":"1.0.0"}
