@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 3 · Perplexity: Citation Markers · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 3 · 2026-10-13</div>
+  <h1 class="zh">Perplexity：引用标注</h1>
+  <h1 class="en">Perplexity: Citation Markers</h1>
+  <p class="lede zh">今天拆什么：Perplexity 回答里的上标引用数字 [1][2] —— 每个有分量的 claim 都附一个可点的来源。</p>
+  <p class="lede en">What we're tearing down: the superscript citation numbers [1][2] in Perplexity's answers — every substantive claim comes with a clickable source.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>Perplexity 几乎不用数字置信度。它的 calibration 是<strong>可验证性</strong>：每个断言配一个 <code>[1]</code>，等于把"信不信我"换成"自己去看来源"—— 产品不说"我有多确定"，而是说"这个信息从哪来"。</p>
+      <ul>
+        <li>成本转移：calibration 从强制确认变成<strong>按需核验</strong> —— 你可以信，也可以点开看。对比 Day 2 的 Notion：写文档出错代价高，所以强制确认；读答案的出错代价低，所以做成可选项 —— <strong>calibration 的成本应该跟出错的代价成正比</strong>，这是第三个证据。</li>
+        <li>诚实的 tension：引用成立的前提是"编号真的对应支撑这个 claim 的来源"。现实是用户很少点开 —— 标注的存在本身会制造一种"可信感"，哪怕没人验证。提醒：calibration 设计要按<strong>"会被跳过"的常态</strong>来做，不能假设用户会去验证。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Perplexity barely uses numeric confidence. Its calibration is <strong>verifiability</strong>: each claim carries a <code>[1]</code>, which swaps "trust me" for "go check the source" — the product doesn't say how sure it is, it says where the information comes from.</p>
+      <ul>
+        <li>Cost shifting: calibration moves from mandatory confirmation to <strong>on-demand verification</strong> — you can take the answer at face value, or click through. Compare Day 2's Notion: overwriting a document is costly, so confirmation is mandatory; being misled by an answer is cheaper, so verification is opt-in — <strong>the cost of calibration should scale with the cost of being wrong</strong>, a third data point for that rule.</li>
+        <li>The honest tension: citations calibrate only if the number genuinely maps to a source that supports the claim. In practice users rarely click — the mere presence of markers manufactures a feeling of reliability even when nothing was verified. A reminder: design calibration for the reality that <strong>it will be skipped</strong>, not for the assumption that users will verify.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li>搜不到好来源时：回答变短、来源变少，或者明确说"基于我的训练数据"—— 此时<strong>没有引用标注本身就是降级信号</strong>（无标注 = 来自记忆，可信度更低）。妙在：降级态不需要新 UI，标注的缺席就是信息。</li>
+        <li>来源链接失效 / 抓取失败：答案保留，但那条引用变成不可验证 —— 不删答案假装没事，也不编一个假来源。</li>
+        <li>生成中途失败：半截答案 + 重试，不假装完整。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li>When no good sources are found: answers get shorter, sources fewer, or it explicitly says "based on my training data" — and <strong>the absence of citation markers is itself a degradation signal</strong> (no marker = from memory, lower trust). The elegant part: the degraded state needs no new UI; the absence of the marker is the message.</li>
+        <li>Dead links / fetch failures: the answer stays, but that citation becomes unverifiable — it neither deletes the answer pretending nothing happened, nor fabricates a fake source.</li>
+        <li>Mid-generation failure: partial answer + retry, no pretending it's complete.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>claim 级核验</strong>：引用贴在句子/断言级别，人也按句子/断言逐条核验 —— 呼应 Day 1、Day 2 的结论：override 必须和 AI 输出同粒度。别的聊天 UI 只能整体接受/拒绝，Perplexity 把验证粒度切到最细。</li>
+        <li>成本：一键点开来源；侧边面板让你不离开答案上下文 —— 核验的摩擦力被压到最低。</li>
+        <li>时机：随时；流式生成中标注就已经可点，不用等答案写完。</li>
+        <li>追问和"相关问题"是<strong>导航式 override</strong>：不满意不重来，换个方向问。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>Claim-level verification</strong>: citations attach at the sentence/claim level, and humans verify at that same level — echoing Days 1–2: override must match the AI's output granularity. Other chat UIs only allow accepting/rejecting the whole answer; Perplexity cuts verification to the finest grain.</li>
+        <li>Cost: one click opens the source; the side panel keeps you inside the answer's context — verification friction is pushed to a minimum.</li>
+        <li>Timing: anytime; markers are clickable even while the answer is still streaming.</li>
+        <li>Follow-ups and "related questions" are <strong>navigational override</strong>: when unsatisfied, don't restart — steer in a new direction.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>表达不确定的诚实方式不一定是给数字，也可以是给可验证性 —— 做不出诚实数字时，给 provenance（来源）。给 AI Hub 的迁移：任何带业务分量的 AI 输出，都应该带一个可核验的来源或明确的"无来源"声明；来源的缺席本身就是一条信息。</p>
+    <p class="en"><strong>Designer takeaway:</strong> Honesty about uncertainty doesn't have to be a number — it can be verifiability. When honest numeric calibration isn't possible, show provenance instead. For AI Hub: any AI output with business weight should carry a checkable source or an explicit "no source" declaration; the absence of provenance is itself information.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Perplexity 的引用标注让我学到一条原则：calibration 不一定要表达"我有多确定"，可以表达"这从哪来" —— 让 AI 的断言粒度和人的核验粒度对齐（claim-level），把验证成本从强制变成按需。我在 AI Hub 里把它变成一条规则：任何带业务分量的 AI 输出，必须附带可核验来源或显式声明"无来源"。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Perplexity's citation markers taught me one principle — calibration doesn't have to express "how sure am I", it can express "where did this come from". Align the AI's claim granularity with the human's verification granularity (claim-level), and shift verification from mandatory to on-demand. I turned this into a rule in AI Hub: any AI output carrying business weight must ship with a verifiable source or an explicit "no source" declaration.</p>
+  </div>
+
+  <footer>
+    <a href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+    <span class="zh">Day 4 → ChatGPT Canvas 的行内改写与 diff</span><span class="en">Day 4 → ChatGPT Canvas: Inline Edits &amp; Diffs</span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>
