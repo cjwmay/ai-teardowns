@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 · ChatGPT Canvas: Inline Edits &amp; Diffs · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 4 · 2026-10-14</div>
+  <h1 class="zh">ChatGPT Canvas：行内改写与 diff</h1>
+  <h1 class="en">ChatGPT Canvas: Inline Edits &amp; Diffs</h1>
+  <p class="lede zh">今天拆什么：ChatGPT Canvas 里，选中一段文字让 AI 改写（调长度、改语气、加 emoji）—— 改写结果以 diff 高亮直接嵌回文档：新增的绿色、删除的加删除线。你可以逐处接受 / 拒绝，或干脆自己再改。</p>
+  <p class="lede en">What we're tearing down: in ChatGPT Canvas, highlight a passage and ask the AI to rewrite it (adjust length, change tone, add emojis) — the rewrite lands back inside the document as an inline diff: additions in green, deletions struck through. Accept or reject per change, or just edit further yourself.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它的策略是<strong>可验证性代替自我评分</strong>。AI 从不告诉你"我有 90% 把握"，而是把"我改了什么"摊开成视觉证据 —— diff 本身就是 calibration 界面。</p>
+      <ul>
+        <li>取舍：它把判断成本转嫁给了用户 —— 你得读 diff。但对长文本编辑这笔账是划算的：AI 动的是你的资产（文档），这时<strong>透明比省心重要</strong>。</li>
+        <li>对比 Day 1 的 Copilot：ghost text 用"草稿感 + 一次击键"做轻量 calibration；Canvas 用 diff 做重量级 calibration。<strong>Calibration 的重量应该和出错的代价成正比</strong>（呼应 Day 2 的观点）。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Its strategy is <strong>verifiability instead of self-scoring</strong>. The AI never says "I'm 90% confident" — it exposes "here's what I changed" as visual evidence, and the diff itself becomes the calibration interface.</p>
+      <ul>
+        <li>The trade-off: judgment cost shifts to the user — you must read the diff. For long-form editing that's a fair price: the AI is touching your asset (your document), where <strong>transparency beats convenience</strong>.</li>
+        <li>Contrast with Day 1's Copilot: ghost text does lightweight calibration ("draft feel + one keystroke"); Canvas does heavyweight calibration with diffs. <strong>Calibration weight should scale with the cost of being wrong</strong> (echoing Day 2).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>失败时归零</strong>：改写失败 / 离线，原文纹丝不动 —— 最差情况就是"什么都没发生"，AI 永远搞不坏你的文档。</li>
+        <li>更关键的是<strong>粒度设计</strong>：行内改写只动你选中的那几段，而不是整篇重生成。粒度越小，失败的 blast radius 越小 —— 这是 degradation 设计里最被低估的一招：把"一次大失败"切成"多次小失败"。</li>
+        <li>核心任务（文档本身）永不断裂：AI 永远是编辑器里的一个操作，不是文档存在的前提。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>Failure degrades to zero</strong>: if the rewrite fails or you're offline, the original text is untouched — the worst case is "nothing happened"; the AI can never corrupt your document.</li>
+        <li>The deeper move is <strong>granularity</strong>: inline edits touch only the passage you selected, never the whole document. Smaller granularity means a smaller blast radius on failure — one of the most underrated degradation tactics: slice one big failure into many small ones.</li>
+        <li>The core task (the document itself) never breaks: AI is an operation inside the editor, never a precondition for the document's existence.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <p>三层 override，层层递进：</p>
+      <ul>
+        <li>① <strong>选中级改写</strong> —— 只改你圈的那段，不碰全文（输入的粒度由人定）。</li>
+        <li>② <strong>diff 级接受 / 拒绝</strong> —— 逐处点头 / 摇头，粒度与 AI 输出一一对应。</li>
+        <li>③ 接受后仍可直接手改 + Canvas 的<strong>版本历史</strong>一键回滚。</li>
+        <li>关键设计：<strong>override 粒度 = 生成粒度</strong> —— AI 改了哪几句，你就能逐句拒绝哪几句，避免了"整篇接受 or 推倒重来"的二元困境（呼应 Day 1 的同粒度原则）。</li>
+        <li>版本历史是最后的保险：哪怕误点了接受，也能穿越回去。这让"接受"这个动作变得便宜 —— <strong>override 成本低，人就敢用 AI</strong>。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Three layers of override, each finer than the last:</p>
+      <ul>
+        <li>① <strong>Selection-scoped rewrites</strong> — only the passage you highlighted is touched (the human sets the input granularity).</li>
+        <li>② <strong>Per-change accept / reject</strong> in the diff — granularity matching the AI's output one-to-one.</li>
+        <li>③ Hand-edit after accepting + Canvas's <strong>version history</strong> for one-click rollback.</li>
+        <li>The key design: <strong>override granularity = generation granularity</strong> — whichever sentences the AI changed, you can reject sentence by sentence, escaping the false binary of "accept everything or redo everything" (echoing Day 1's same-granularity principle).</li>
+        <li>Version history is the final insurance: even a mistaken accept can be time-traveled back. That makes "accept" cheap — <strong>when overriding is cheap, people dare to use the AI</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>diff 是"可验证性即 calibration"的最佳范本。对 AI Hub 可迁移：AI 对用户资产的任何改动，都应该以 diff 形态呈现、接受 / 拒绝粒度与改动粒度一致；版本回滚是 AI 编辑器的标配，不是加分项。</p>
+    <p class="en"><strong>Designer takeaway:</strong> Diffs are the best embodiment of "verifiability as calibration". Transferable to AI Hub: any AI change to a user's asset should be presented as a diff, with accept/reject granularity matching the change granularity; version rollback is table stakes for an AI editor, not a bonus.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Canvas 不用置信度分数做 trust calibration，而是用 diff 把 AI 的改动变成可验证的视觉证据 —— override 粒度与生成粒度一一对应，版本历史兜底。我在 AI Hub 里沿用同一原则：AI 对用户内容的任何改动都必须 diff 可见、可逐条回滚。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Canvas doesn't calibrate trust with confidence scores — it turns the AI's changes into verifiable visual evidence via diffs, with override granularity matching generation granularity one-to-one and version history as the backstop. I applied the same principle in AI Hub: any AI change to user content must be diff-visible and individually reversible.</p>
+  </div>
+
+  <footer>
+    <a href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+    <span class="zh">Day 5 → Midjourney 的四图候选</span><span class="en">Day 5 → Midjourney: The 4-Image Grid</span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>
