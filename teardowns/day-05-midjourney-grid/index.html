@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 5 · Midjourney: The 4-Image Grid · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 5 · 2026-10-15</div>
+  <h1 class="zh">Midjourney：四图候选</h1>
+  <h1 class="en">Midjourney: The 4-Image Grid</h1>
+  <p class="lede zh">今天拆什么：在 Midjourney 输入 prompt 后，AI 不直接给一张"最终答案"，而是先交 2×2 四张候选图；你可以 U1–U4 放大某一张（upscale），或 V1–V4 让某一张"再生变体"（variations）。</p>
+  <p class="lede en">What we're tearing down: after a prompt, Midjourney doesn't hand you one "final answer" — it serves a 2×2 grid of four candidates. U1–U4 upscales one (upscale); V1–V4 regenerates variations of one (variations).</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它的策略是<strong>用多选项代替单点不确定性</strong>。Midjourney 从不告诉你"我对这张图有多确定"（扩散模型本质上也没有置信度分数可报），它把"不确定性"翻译成"多样性"：给你看四个它都认为还不错的可能解，让你用人眼做仲裁。</p>
+      <ul>
+        <li>取舍：它把判断成本转嫁给了用户 —— 你得看四张、挑一张。但换来的是诚实：承认 prompt→图像的映射是<strong>一对多</strong>的，不假装存在一个"正确"答案。对比 Day 1 的 Copilot（ghost text 用草稿感表达"这只是个猜测"），Midjourney 的表达是"这里有四种猜测"。</li>
+        <li>更深的一层：U / V 按钮本身就是 calibration 界面 —— U（upscale）="这张对了，继续"（确认）；V（variation）="方向对了但没到"（部分接受）。系统从不让你"整体接受四张"，<strong>每个选择都是对 AI 判断的一次显式校准</strong>。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Its strategy is <strong>replacing single-point uncertainty with multiple options</strong>. Midjourney never says "I'm X% sure about this image" (diffusion models have no confidence score to report) — it translates "uncertainty" into "diversity": four plausible solutions, with your eyes as the arbiter.</p>
+      <ul>
+        <li>The trade-off: judgment cost shifts to the user — you must scan four images and pick one. What you get in return is honesty: it admits the prompt→image mapping is <strong>one-to-many</strong> instead of pretending there's a single correct answer. Contrast with Day 1's Copilot (ghost text's "this is just a guess" draft feel); Midjourney says "here are four guesses".</li>
+        <li>One layer deeper: the U / V buttons <em>are</em> the calibration interface — U (upscale) = "this one is right, go on" (confirmation); V (variation) = "right direction, not there yet" (partial acceptance). The system never asks you to "accept all four" — <strong>every click is an explicit calibration of the AI's judgment</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>失败时降级为"更少的选择"，而不是报错</strong>：生成失败或排队中，grid 不会出现，但你能看到进度条和重新 roll（⟳ re-roll）—— 最差情况是"等 + 重来"，核心任务（继续迭代）不断裂。</li>
+        <li><strong>内容安全拦截时降级成"指导"</strong>：prompt 被拒，返回的是"哪条规则拦了你 + 换个说法试试"，而不是一张黑图或沉默 —— 让你带着修改继续。</li>
+        <li>四图机制本身就是 degradation 设计：单张生成质量不稳定是常态，四张里"至少一张能用"的概率远高于单张 —— <strong>用冗余（redundancy）对冲生成的不确定性</strong>。对比 Day 4 的"粒度越小 blast radius 越小"，这里是"选项越多，单次失败越不致命"。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>Failure degrades to "fewer options", not an error</strong>: if generation fails or queues, no grid appears — but you see a progress bar and a ⟳ re-roll. The worst case is "wait + retry"; the core task (keep iterating) never breaks.</li>
+        <li><strong>Safety blocks degrade to guidance</strong>: a rejected prompt returns "which rule flagged you + try rephrasing this way" — not a black image or silence — so you can continue with a fix.</li>
+        <li>The four-image mechanism is degradation design in itself: single-image quality is unstable, but "at least one of four is usable" is far more likely — <strong>using redundancy to hedge generative uncertainty</strong>. Contrast with Day 4's "smaller granularity, smaller blast radius": here it's "more options, less fatal single failures".</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <p>选择本身就是 override，而且带<strong>代价阶梯</strong>：</p>
+      <ul>
+        <li>① <strong>U1–U4 选图</strong> —— "接受这张、放弃其他三张"，AI 给候选、人做最终仲裁，override 成本 = 点一下。</li>
+        <li>② <strong>V1–V4 变体</strong> —— 部分 override：保留这张的构图 / 风格 DNA，只换细节 —— 与 AI 输出同粒度（都是一张图），但比"整批重来"便宜得多。</li>
+        <li>③ <strong>Remix / 重写 prompt 重 roll</strong> —— 全量 override：推翻整批四个，从头再来。</li>
+        <li>关键设计：override 的<strong>代价阶梯</strong>（选图 &lt; 变体 &lt; 重写 prompt 重跑）与"推翻程度"成正比 —— 小修正便宜、大推翻贵，迭代手感非常顺。呼应 Day 1：<strong>override 成本低，人就敢用 AI</strong>。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Selection <em>is</em> override — and it comes with a <strong>cost ladder</strong>:</p>
+      <ul>
+        <li>① <strong>U1–U4 pick</strong> — "accept this one, drop the other three": the AI proposes, the human arbitrates, at the cost of one click.</li>
+        <li>② <strong>V1–V4 variation</strong> — partial override: keep this image's composition/style DNA, swap the details — same granularity as the AI's output (one image), far cheaper than re-rolling the batch.</li>
+        <li>③ <strong>Remix / rewrite prompt &amp; re-roll</strong> — full override: discard all four, start over.</li>
+        <li>The key design: the override <strong>cost ladder</strong> (pick &lt; vary &lt; rewrite &amp; re-run) scales with the degree of rejection — small fixes are cheap, big rejections are expensive, so iteration feels smooth. Echoing Day 1: <strong>when overriding is cheap, people dare to use the AI</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>当 AI 输出天然不确定、且没有"标准答案"时，别学搜索框"给一个最佳答案"，学 Midjourney"给一组候选让人仲裁"—— 把不确定性做成多样性，把判断权交还给人。对 AI Hub 可迁移：开放式生成（比如 SEO Studio 的标题 / 描述建议）应该一次给 3–4 个版本让人挑，而不是给一个"最优解"让人只能接受或重写。</p>
+    <p class="en"><strong>Designer takeaway:</strong> When AI output is inherently uncertain with no "correct answer", don't copy the search box's "one best answer" — copy Midjourney's "a set of candidates for the human to arbitrate": turn uncertainty into diversity and hand judgment back to the person. Transferable to AI Hub: open-ended generation (e.g. SEO Studio's title/description suggestions) should offer 3–4 versions to pick from, not one "optimal" answer the user can only accept or rewrite.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Midjourney 不用置信度分数做 trust calibration，而是把不确定性翻译成四个候选、让用户做仲裁 —— U / V 的代价阶梯让"小修正便宜、大推翻贵"。我在 AI Hub 的开放式生成里沿用同一原则：多候选 + 人仲裁，而不是单点最优解。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Midjourney doesn't calibrate trust with confidence scores — it translates uncertainty into four candidates and lets the user arbitrate, with a U/V cost ladder that makes small fixes cheap and big rejections expensive. I applied the same principle to open-ended generation in AI Hub: multiple candidates + human arbitration, not a single optimal answer.</p>
+  </div>
+
+  <footer>
+    <a href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+    <span><span class="zh">Day 6 → Grammarly suggestion cards（敬请期待）</span><span class="en">Day 6 → Grammarly suggestion cards (coming soon)</span></span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>
