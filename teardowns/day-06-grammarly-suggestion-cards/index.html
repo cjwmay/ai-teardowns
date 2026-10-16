@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 6 · Grammarly: Suggestion Cards as Micro-Arbitration · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 6 · 2026-10-16</div>
+  <h1 class="zh">Grammarly：Suggestion cards</h1>
+  <h1 class="en">Grammarly: Suggestion Cards</h1>
+  <p class="lede zh">今天拆什么：写英文时，Grammarly 用红 / 蓝下划线标出问题；点击后弹出 suggestion card —— 显示建议改法 + 一句 plain-language 解释；<code>Accept</code> 原地替换，<code>Dismiss</code> 忽略。粒度是一个建议一张卡。</p>
+  <p class="lede en">What we're tearing down: while writing English, Grammarly marks issues with red / blue underlines; clicking one pops a suggestion card showing the proposed fix plus a one-line plain-language explanation; <code>Accept</code> replaces in place, <code>Dismiss</code> ignores it. The granularity is one card per suggestion.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它不用数字置信度 —— calibration 是一套<strong>颜色分级 + 解释句</strong>：红色下划线 = 拼写 / 基础语法（AI 自信度高、改错代价也高，一个词改错整个句意会变）；蓝色 = 清晰度 / 语气 / 风格建议（主观性强、不确定性高）。</p>
+      <ul>
+        <li>取舍：颜色编码偷换了概念 —— 它表达的是<strong>问题类型</strong>，不是 AI 的确定程度，用户容易误读成"红色 = AI 很确定"。真正的 calibration 发生在卡片里：每个建议都附一句解释（"这里用过去式更准确，因为…"），用户是被<strong>理由</strong>说服，而不是被分数说服。呼应 Day 1（Copilot 故意不给数字）：当置信度分数本身不可靠时，<strong>给理由比给数字更诚实</strong>。</li>
+        <li>弱点：误报（false positive）时下划线照样是红的 —— calibration 失败只能靠用户逐条审查兜底。所以卡片<strong>必须</strong>带解释：解释是唯一能让用户发现"这个建议是错的"的界面。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>No numeric confidence here — calibration is a <strong>color hierarchy + explanation line</strong>: red underlines = spelling / basic grammar (high AI confidence, but also high cost of a wrong fix — one word can change the whole meaning); blue = clarity / tone / style suggestions (subjective, high uncertainty).</p>
+      <ul>
+        <li>The trade-off: color coding swaps the concept — it communicates <strong>issue type</strong>, not the AI's certainty, and users easily misread it as "red = the AI is very sure". The real calibration happens inside the card: every suggestion carries an explanation ("past tense fits better here because…"), so users are persuaded by the <strong>reason</strong>, not a score. Echoing Day 1 (Copilot deliberately shows no numbers): when confidence scores are themselves unreliable, <strong>giving reasons is more honest than giving numbers</strong>.</li>
+        <li>The weakness: on a false positive the underline is red anyway — calibration failure can only be caught by per-suggestion review. That's why the card <strong>must</strong> carry an explanation: it's the only UI that lets users notice "this suggestion is wrong".</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>降级分层</strong>：AI 建议层挂掉 / 离线 → 退回基础拼写检查（红色波浪线照样在）；建议服务全挂 → "什么都不标"。核心任务（写作）永不断裂，最差情况就是回到没有建议的样子。</li>
+        <li><strong>不确定时干脆不给建议</strong>：只留下一条下划线提示、不弹改法 —— 把"要不要改"的判断权完全留给用户。对比 Day 3（Perplexity 的"无标注 = 降级信号"）：Grammarly 的"有标注、无建议"就是它的降级信号。</li>
+        <li><strong>降级成"慢"，而不是"错"</strong>：长文档 / 网络差时建议延迟出现，而不是一次性全刷出来 —— 宁可慢半拍，也不给半成品建议。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>Layered degradation</strong>: if the AI suggestion layer is down or offline, it falls back to basic spellcheck (the red wavy underlines stay); if suggestions fail entirely, you get "nothing marked". The core task (writing) never breaks — the worst case is just "no suggestions".</li>
+        <li><strong>When uncertain, it offers no suggestion at all</strong>: only the underline stays, with no proposed fix — handing the "should I change it" judgment entirely to the user. Contrast with Day 3 (Perplexity's "missing marker = degradation signal"): Grammarly's "marker without suggestion" is its degradation signal.</li>
+        <li><strong>Degrade to "slow", not "wrong"</strong>: in long documents or on poor networks, suggestions arrive late instead of all at once — better late than half-baked.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>粒度 = 单个 suggestion card</strong>：一对一的 <code>Accept</code>（✓）/ <code>Dismiss</code>（×），另有"报告问题"和"加入词典"。Day 1 原则重现 —— <strong>override 的粒度与 AI 输出同粒度</strong>：AI 给到词，人就按词裁决。</li>
+        <li><strong>用摩擦换准确性</strong>：每条建议必须单独确认，没有"全部接受"一键通关。连续多个建议时成本叠加，人会进入"盲目点通过"模式 —— Grammarly 的对策就是不给你这个捷径，逐条摩擦逼你看一眼。</li>
+        <li><strong>override 本身可逆</strong>：接受后还能 <code>Ctrl</code>+<code>Z</code> 撤销，这是第二层保险。呼应 Day 2 的"失败归零"：最差情况是撤销回到改之前，AI 永远留了一条回家的路。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>Granularity = one suggestion card</strong>: one-to-one <code>Accept</code> (✓) / <code>Dismiss</code> (×), plus "report issue" and "add to dictionary". The Day 1 principle returns — <strong>override granularity matches output granularity</strong>: the AI proposes per word, the human judges per word.</li>
+        <li><strong>Friction in exchange for accuracy</strong>: every suggestion must be confirmed individually — there is no "accept all" shortcut. With many consecutive suggestions, costs stack up and people slip into "blindly accept" mode; Grammarly's countermeasure is to deny that shortcut and make the per-item friction force you to look.</li>
+        <li><strong>Overrides are reversible</strong>: <code>Ctrl</code>+<code>Z</code> after accepting is a second layer of insurance. Echoing Day 2's "failure degrades to zero": the worst case is undoing back to before the change — the AI always leaves a way home.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>建议型 AI 的最佳载体是"贴着原文、带理由、一次只给一条的可审查卡片" —— 让用户在上下文里逐条裁决，而不是侧边栏批量输出全文替换。对 AI Hub 可迁移：SEO Studio 给文案改写建议时，不要一次扔出整段替换，而要行内卡片 + "为什么这么改"解释 + 单条接受，让人用一次点击做仲裁、用撤销做保险。</p>
+    <p class="en"><strong>Designer takeaway:</strong> The best carrier for suggestion-style AI is a "reviewable card anchored to the original text, with a reason, one suggestion at a time" — letting users judge item by item in context, not a sidebar dumping whole-paragraph replacements. Transferable to AI Hub: when SEO Studio suggests copy edits, use inline cards with a "why this change" explanation and per-item accept, not one bulk replacement — one click to arbitrate, undo as insurance.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Grammarly 不用置信度分数做 trust calibration，而是用"颜色分级 + 每个建议附理由"让用户判断建议值不值得信；override 粒度精确到单个建议、逐条确认、且可撤销 —— 我在 AI Hub 的改写建议里沿用同一模式：行内卡片、逐条裁决、解释即 calibration。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Grammarly doesn't calibrate trust with confidence scores — it uses a color hierarchy plus a reason on every suggestion, letting users judge whether it's worth believing; overrides are per-suggestion, confirmed one by one, and reversible. I applied the same pattern to rewrite suggestions in AI Hub: inline cards, per-item arbitration, explanations as calibration.</p>
+  </div>
+
+  <footer>
+    <a href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+    <span><span class="zh">Day 7 → Figma AI "Make Design"（敬请期待）</span><span class="en">Day 7 → Figma AI "Make Design" (coming soon)</span></span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>
