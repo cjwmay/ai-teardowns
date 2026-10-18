@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 7 · Figma AI "Make Design": Where Generation Ends and the Human Takes Over · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 7 · 2026-10-17</div>
+  <h1 class="zh">Figma AI "Make Design"：生成式 UI 的起点 vs 人工接管点</h1>
+  <h1 class="en">Figma AI "Make Design": Where Generation Ends and the Human Takes Over</h1>
+  <p class="lede zh">今天拆什么：Figma AI 的 <code>Make Design</code> —— 在 prompt 框里写一句话（"一个 SaaS 仪表盘，有侧边栏和数据卡片"），Figma 直接在画布上生成一屏完整的起始设计（frame）。</p>
+  <p class="lede en">What we're tearing down: Figma AI's <code>Make Design</code> — type one sentence in a prompt box ("a SaaS dashboard with a sidebar and data cards") and Figma generates a complete starting frame right on the canvas.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它几乎完全不用数字置信度 —— 策略是<strong>"不承诺，交付草稿"</strong>：</p>
+      <ul>
+        <li>生成物直接落在画布上，但姿态是<strong>半成品</strong>：你能一眼看到 layer 命名、auto layout 结构都很粗糙 —— 这种"未完成感"本身就是 calibration。AI 没说自己做对了，视觉就先告诉你"别全信"。</li>
+        <li>深层取舍：越像成品的生成物，越容易给人虚假的安全感。Figma 让生成物待在画布的<strong>草稿姿态</strong>（provisional by default），而不是开一个新页面假装这是"答案"。</li>
+        <li>弱点：没有显式表达"这部分我没把握" —— 所有区域看起来同样确定，calibration 只靠"它是个草稿"这一层。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>It uses almost no numeric confidence — the strategy is <strong>"make no promise, deliver a draft"</strong>:</p>
+      <ul>
+        <li>The generated frame lands on the canvas but arrives <strong>visibly unfinished</strong>: rough layer names, coarse auto-layout structure — this "draft-ness" <em>is</em> the calibration. The AI never claims to be right; the visuals say "don't fully trust this" first.</li>
+        <li>The deeper trade-off: the more finished a generated artifact looks, the more false safety it creates. Figma keeps the output in a <strong>draft posture</strong> (provisional by default) instead of opening a new page pretending it's "the answer".</li>
+        <li>The weakness: there's no explicit way to say "I'm unsure about this part" — every region looks equally certain; calibration rests entirely on the "it's a draft" layer.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li>失败时：报错 + 重新生成。不玩花样，也不替用户硬编一个。</li>
+        <li>prompt 太模糊时：降级为一个<strong>平庸但完整的架子</strong> —— "有总比没有好"的起点，而不是沉默。核心任务（设计师本来就要画这一屏）<strong>从不断裂</strong>：最差情况就是今天没省下那 20 分钟。</li>
+        <li>缺口：质量差时没有"降级成线框"这类显式策略，只能靠用户自己删了重来。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li>On failure: an error + regenerate. No gimmicks, no forced improvisation.</li>
+        <li>On a vague prompt: it degrades to a <strong>mediocre-but-complete scaffold</strong> — a "better than nothing" starting point rather than silence. The core task (the designer was going to draw this screen anyway) <strong>never breaks</strong>: the worst case is simply not saving those 20 minutes today.</li>
+        <li>The gap: no explicit "degrade to wireframe" strategy for poor-quality output — the user must delete and redo manually.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li>这是整个设计的<strong>点睛之笔</strong>：生成物是<strong>原生 Figma 图层</strong> —— override 发生在人的主场，不用学任何新交互。</li>
+        <li>接管点极其明确：prompt 描述意图 → AI 搭架子 → <strong>从落到画布那一刻起，全部决策权归人</strong>（布局、组件、token、规范），没有交接仪式，因为输出本来就待在你的工具里。</li>
+        <li>代价阶梯清晰：追加 prompt 微调 &lt; 重新生成 &lt; 人工重做。接受 = 直接开始改，拒绝 = 删掉或重新 prompt —— 都是一步操作。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li>This is the <strong>masterstroke of the whole design</strong>: the output is <strong>native Figma layers</strong> — the override happens on the human's home turf, with no new interaction to learn.</li>
+        <li>The handoff point is crystal clear: prompt describes intent → AI builds the scaffold → <strong>the moment it lands on the canvas, all decision-making belongs to the human</strong> (layout, components, tokens, specs). No handoff ceremony, because the output already lives in your tools.</li>
+        <li>A clean cost ladder: refine with a follow-up prompt &lt; regenerate &lt; redo by hand. Accepting means "start editing"; rejecting means "delete or re-prompt" — both are one action.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>AI 生成式 UI 的最佳 handoff 是"把输出放进用户已有的工作流"，而不是"给 AI 造一个新编辑器" —— 接管点越明确（"从这一秒起，全是你的"），人越敢用。</p>
+    <p class="en"><strong>Designer takeaway:</strong> the best handoff for AI-generated UI is "put the output inside the user's existing workflow", not "build the AI a new editor" — the clearer the handoff point ("from this second on, it's all yours"), the more confidently people use it.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Figma Make Design 的 trust calibration 靠的是"交付草稿"而不是置信度分数 —— 生成物故意以半成品姿态落在画布上，让不确定性可见；override 之所以低成本，是因为输出是原生图层、人在自己的主场接管。我在 AI Hub 里会沿用同一逻辑：AI 输出默认 provisional，但要用人已有的界面承载，别让用户为了改 AI 的东西再学一套操作。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Figma's Make Design calibrates trust by "delivering a draft" instead of confidence scores — the output lands on the canvas visibly unfinished, making uncertainty visible; override is cheap precisely because the output is native layers and the human takes over on their own turf. I'd apply the same logic in AI Hub: AI output is provisional by default, but it must be carried by interfaces the user already has — never make people learn a new interaction just to fix the AI's output.</p>
+  </div>
+
+  <footer>
+    <a href="../day-06-grammarly-suggestion-cards/index.html">← <span class="zh">Day 6 · Grammarly Suggestion cards</span><span class="en">Day 6 · Grammarly Suggestion cards</span></a>
+    <a href="../day-08-linear-ai-summaries/index.html"><span class="zh">Day 8 → Linear 的 AI issue 总结</span><span class="en">Day 8 → Linear's AI issue summaries</span></a>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>

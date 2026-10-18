@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 8 · Linear's AI Issue Summaries: Verifiable Summaries · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 8 · 2026-10-18</div>
+  <h1 class="zh">Linear 的 AI issue 总结：摘要为什么敢被用在决策里</h1>
+  <h1 class="en">Linear's AI Issue Summaries: Why a Summary Can Be Trusted in Decisions</h1>
+  <p class="lede zh">今天拆什么：Linear 的 issue 堆了几十条评论后，点一下 AI 就在顶部生成一份摘要 —— 但每条结论后面都带着原文锚点，点一下就跳到对应的评论。</p>
+  <p class="lede en">What we're tearing down: after a Linear issue accumulates dozens of comments, one click generates an AI summary at the top — but every conclusion carries a source anchor that jumps to the originating comment.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它的 calibration 策略是<strong>"别信我，去看原文"</strong> —— 摘要里的每个 claim 都带一个跳转锚点，指向它来自哪条评论。AI 从不自我打分（"我 95% 确定"），而是把<strong>溯源链</strong>摊在你面前：</p>
+      <ul>
+        <li>这和 Day 3 的 Perplexity 是同一血统：Perplexity 把 calibration 外包给"来源可验证性"；Linear 把它外包给"上下文可回溯性"。共同点是 —— <strong>不说"我多确定"，说"这句话从哪来"</strong>。</li>
+        <li>深层取舍：锚点把"信任"拆成逐条可核验的粒度。摘要敢被用在团队决策里，不是因为它没错，而是因为<strong>错的时候你看得出它错在哪一条</strong>。校准的成本转移到了用户，但每一条的成本都很小 —— 点一下锚点，一秒验证。</li>
+        <li>对比 Day 4 的 Canvas diff：diff 让"AI 改了什么"可见，锚点让"AI 压缩掉了什么"可见。压缩是最危险的操作 —— 省略的每一个细节都是一次决策。锚点就是压缩的 calibration。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Its calibration strategy is <strong>"don't trust me — check the source"</strong>. Every claim in the summary carries an anchor jumping to the comment it came from. The AI never self-scores ("I'm 95% sure"); instead it lays out the <strong>provenance chain</strong> in front of you:</p>
+      <ul>
+        <li>Same bloodline as Day 3's Perplexity: Perplexity outsources calibration to "verifiable sources"; Linear outsources it to "traceable context". The shared move — <strong>say "where this came from", not "how sure I am"</strong>.</li>
+        <li>The deeper trade-off: anchors split "trust" into claim-by-claim verifiable units. A summary is safe to use in team decisions not because it's error-free, but because <strong>when it's wrong, you can see exactly which line is wrong</strong>. The cost of calibration shifts to the user, but each check costs one click and one second.</li>
+        <li>Contrast with Day 4's Canvas diffs: diffs make "what the AI changed" visible; anchors make "what the AI compressed away" visible. Compression is the most dangerous operation — every omitted detail is a decision. Anchors are the calibration of compression.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>评论太少时：降级为更短的摘要，而不是硬编</strong>。信息不够就不编造 —— 最差情况是"摘要很短"或干脆没有，而不是一条看起来很有说服力的假结论。宁可少说，不瞎说。</li>
+        <li>结构性设计：摘要永远是 issue 页面上的<strong>增强层</strong>，不是前提。AI 挂了 / 离线了，评论列表本身照常工作 —— 核心任务（看 issue、回评论）<strong>从不断裂</strong>。</li>
+        <li>对比 Day 2 的 Notion AI：失败归零（"什么都没发生"）。Linear 同理 —— 没有摘要，你只是回到手动读评论的状态，没有被"推向"一个错误的结论。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>When there are too few comments: it degrades to a shorter summary instead of inventing one.</strong> Insufficient information means no fabrication — the worst case is "a short summary" or none at all, never a persuasive-looking fake conclusion. Say less rather than make things up.</li>
+        <li>Structural design: the summary is always an <strong>enhancement layer</strong> on the issue page, never a precondition. If the AI is down or offline, the comment list works as usual — the core task (reading and replying) <strong>never breaks</strong>.</li>
+        <li>Echoing Day 2's Notion AI: failure degrades to zero ("nothing happened"). Same here — without a summary, you're simply back to reading comments manually; you're never pushed toward a wrong conclusion.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>就地编辑</strong>：摘要生成后可以直接改 —— override 的粒度是整份摘要，改完它就变成了团队的资产，不再是"AI 的输出"。这是微妙但关键的一步：<strong>被编辑过的摘要，信任的归属发生了转移</strong>（从 AI 转移到人）。</li>
+        <li><strong>重新生成（regenerate）</strong>：对摘要不满意，一键重跑 —— 和评论列表的实时性对齐（新评论进来，摘要可以 refresh）。override 的时机是"每次信息更新"，而不是一次性。</li>
+        <li>对比 Day 4 的 Canvas（逐条接受 / 拒绝 + 版本回滚）：Linear 的 override 更粗糙 —— 只有"整份重写"级别。但它的聪明之处是<strong>把评论列表本身当作终极 override</strong>：对摘要的任何怀疑，答案都在下面 30 条评论里躺着。这不是真正的 override 控件，而是"可验证性即 override"的又一个实例 —— 你不需要一个按钮去推翻它，因为你始终可以越过它去看原文。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>Edit in place</strong>: the summary can be edited directly after generation — override granularity is the whole summary, and once edited it becomes the team's asset, not "the AI's output". A subtle but crucial shift: <strong>an edited summary transfers the ownership of trust</strong> (from AI to human).</li>
+        <li><strong>Regenerate</strong>: unhappy with the summary, re-run with one click — aligned with the comment list's real-time nature (new comments arrive, the summary can refresh). Override timing is "every information update", not one-and-done.</li>
+        <li>Contrast with Day 4's Canvas (per-change accept / reject + version rollback): Linear's override is coarser — only "rewrite the whole thing". But its clever move is treating <strong>the comment list itself as the ultimate override</strong>: any doubt about the summary is answerable by the 30 comments lying underneath. That's not a real override control — it's another instance of "verifiability as override": you never need a button to overturn it, because you can always go past it to the source.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>摘要是最危险的 AI 输出形态 —— 压缩必然伴随取舍，而取舍必然影响决策。所以规则是：<strong>逐点可溯源的摘要是 calibration 界面，无法溯源的摘要是信任泄漏</strong>。可迁移到 AI Hub：AI 做的任何"压缩"（总结用户反馈、提炼 SEO insight）都必须给每个结论留一条回证据的路；摘要必须能就地编辑、一键重跑 —— 摘要被编辑的那一刻，它就从"AI 的输出"变成"人的资产"。</p>
+    <p class="en"><strong>Designer takeaway:</strong> Summarization is the most dangerous AI output form — compression always entails trade-offs, and trade-offs always affect decisions. The rule: <strong>a summary that is traceable point-by-point is a calibration interface; an untraceable one is a trust leak</strong>. Transferable to AI Hub: any AI "compression" (summarizing user feedback, distilling SEO insights) must give every conclusion a path back to evidence; the summary must be editable in place and re-runnable — the moment a summary is edited, it stops being "the AI's output" and becomes "the human's asset".</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Linear 的 AI 总结之所以敢被用在团队决策里，是因为它不做置信度评分 —— 它给每个结论配了原文锚点，错的时候你看得出它错在哪一条。摘要是最危险的 AI 输出，因为压缩即决策。我在 AI Hub 里会坚持同一原则：AI 做的任何压缩都要逐点可溯源，摘要必须能就地编辑和重跑 —— 被编辑过的摘要，信任的归属就从 AI 转到了人。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Linear's AI summary earns a place in team decisions because it skips confidence scores — every conclusion carries a source anchor, so when it's wrong you can see exactly which line is wrong. Summarization is the most dangerous AI output form, because compression is decision-making. I hold the same line in AI Hub: any AI compression must be traceable point-by-point, and the summary must be editable in place and re-runnable — once a summary is edited, the ownership of trust transfers from the AI to the human.</p>
+  </div>
+
+  <footer>
+    <a href="../day-07-figma-make-design/index.html">← <span class="zh">Day 7 · Figma AI "Make Design"</span><span class="en">Day 7 · Figma AI "Make Design"</span></a>
+    <span class="zh">Day 9 → Superhuman 的 AI 撰写邮件</span><span class="en">Day 9 → Superhuman's AI email drafting</span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>
