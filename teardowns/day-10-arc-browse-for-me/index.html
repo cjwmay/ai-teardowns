@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 10 · Arc Search "Browse for me": Progress Display & Interruption in Agentic Flows · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 10 · 2026-10-23</div>
+  <h1 class="zh">Arc Search "Browse for me"：agentic 流程的进度表达与中断机会</h1>
+  <h1 class="en">Arc Search "Browse for me": Progress Display &amp; Interruption in Agentic Flows</h1>
+  <p class="lede zh">今天拆什么：你输入一个问题，Arc 替你去读约 6 个网页，然后当场生成一页为你定制的答案页。拆的是这个 agentic 流程本身 —— 它运行时会把"正在读哪些网站"一条条列出来给你看，但你<strong>看得到、干预不了</strong>。</p>
+  <p class="lede en">What we're tearing down: you type a question, and Arc reads roughly six web pages on your behalf, then generates a custom answer page on the spot. We're dissecting the agentic process itself — it lists "which sites I'm reading" live, so you can <strong>watch but not steer</strong>.</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它把 calibration 从<strong>"结果"前移到"过程"</strong>：运行时实时展示正在读哪些网站（逐条勾掉），等于向你报账"我看了什么"。域名本身就是可信度代理（credibility proxy）—— 看到权威媒体你会更信，看到内容农场你会打折。UI 不用说"我很确定"，而是让你<strong>看到证据链</strong>。</p>
+      <ul>
+        <li>成页后切换到第二套机制：每节附来源链接 + 底部的 "Dive Deeper" 区 —— 从过程透明转到结果可验证。</li>
+        <li>取舍：过程展示买的是<strong>耐心</strong>（perceived wait）—— 几秒的等待变得可忍受。但它的 calibration 是滞后的：中途你能看到它在读，却无法判断读得对不对、取舍合不合理，质量只能等成页后评判。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>It moves calibration <strong>from "the result" to "the process"</strong>: while running, it shows which sites it's reading, ticking them off one by one — an itemized account of "what I looked at". The domain itself is a credibility proxy: reputable outlets raise your trust, content farms discount it. The UI never says "I'm confident"; it <strong>shows you the evidence chain</strong>.</p>
+      <ul>
+        <li>After the page is built, a second mechanism kicks in: source links per section plus the "Dive Deeper" section at the bottom — from process transparency to result verifiability.</li>
+        <li>The trade-off: the progress display buys <strong>patience</strong> (perceived wait) — a few seconds of waiting become tolerable. But its calibration is lagging: mid-flight you can see what it reads, but can't judge whether it read well or chose well; quality can only be assessed once the page is done.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <p>藏在"读到几个"里 —— 降级是<strong>质量梯度</strong>，不是二元成败：</p>
+      <ul>
+        <li>某个网站打不开 / 读取失败：直接跳过，用已读到的继续合成。读到 6 个和只读到 3 个，页面完整度不同，但页面照样生成。</li>
+        <li>这是多源 agentic 任务的天然优势：单步生成要么成要么败，多步任务天然带<strong>部分成功（partial success）</strong>状态。</li>
+        <li>核心任务（回答问题）不断裂；最差情况是信息少一点的页面，不是空白报错。页面式输出本身也是降级载体 —— 哪怕合成质量打折，骨架（标题、分节、链接）还保留了浏览价值。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>It's hidden in "how many it managed to read" — degradation is a <strong>quality gradient</strong>, not a binary:</p>
+      <ul>
+        <li>If a site fails to load or parse, it's skipped and synthesis continues with what was read. Six sources vs. three means different completeness, but the page is still generated either way.</li>
+        <li>This is the natural advantage of multi-source agentic tasks: single-shot generation either succeeds or fails, while multi-step tasks naturally carry a <strong>partial success</strong> state.</li>
+        <li>The core task (answering the question) never breaks; the worst case is a thinner page, never a blank error. The page-format output is itself a degradation vessel — even if synthesis quality dips, the skeleton (headings, sections, links) retains browsing value.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li>中途中断：<strong>粒度最粗</strong> —— 只有"放弃 / 重跑"，你不能在中间说"别读这个，换那个"。Agent 的过程是可看不可改的黑盒。</li>
+        <li>真正的 override 点在<strong>输入和输出两端</strong>：输入端改 query 重跑（代价 = 重来一遍的几秒钟）；输出端逐个点开来源链接自己验证，或退回传统搜索自己看（Arc 本来就保留了传统搜索入口）。</li>
+        <li>设计洞见：agentic 流程的 interrupt 是个连续谱 —— Arc 选了 run-to-completion + 全过程可视化，而不是<strong>中途决策检查点</strong>（"找到这些来源，继续还是改方向？"）。对 5 秒的任务这个选择是对的；但对 5 分钟的 research agent，缺检查点就是设计债。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li>Mid-flight interruption: <strong>the coarsest granularity</strong> — only "abandon / re-run"; you can't say "skip that one, read this instead" in the middle. The agent's process is a watch-only black box.</li>
+        <li>The real override points sit at <strong>both ends</strong>: refine the query and re-run (cost = a few seconds of redo), or verify by opening source links one by one afterward, or fall back to classic search (which Arc deliberately keeps as an entry point).</li>
+        <li>The design insight: interruption in agentic flows is a spectrum — Arc chose run-to-completion plus full process visibility instead of <strong>mid-flight decision checkpoints</strong> ("found these sources — continue or redirect?"). Right call for a 5-second task; but for a 5-minute research agent, the missing checkpoint is design debt.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>在 agentic 流程里，进度展示买的是耐心（perceived performance），来源展示买的是信任。但"可看不可改"的过程是半成品 —— 长时间的 agent 任务，需要在关键决策点设检查点，而不是只给人"全盘重来"的选项。</p>
+    <p class="en"><strong>Designer takeaway:</strong> in agentic flows, progress display buys patience (perceived performance) and source display buys trust. But a watch-only process is half-finished design — long-running agents need checkpoints at key decision points, not just an "all-or-nothing re-run" for the human.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Arc 的 Browse for me 把 trust calibration 做在过程里 —— 实时列出它在读哪几个网站，让人用域名判断可信度，而不是等一个置信度数字。我在 AI Hub 的多步 AI 流程里借用了这个思路：每一步都展示输入来源，让人能中途质疑，而不是只能接受最终结果。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Arc's Browse for me calibrates trust inside the process — it lists which sites it's reading in real time, letting users judge credibility by domain instead of waiting for a confidence score. I borrowed this in AI Hub's multi-step AI flows: every step shows its input sources, so people can question mid-flight instead of only accepting the final result.</p>
+  </div>
+
+  <footer>
+    <a href="../day-09-superhuman-ai-drafts/index.html">← <span class="zh">Day 9 · Superhuman 的 AI 撰写邮件</span><span class="en">Day 9 · Superhuman's AI Email Drafting</span></a>
+    <span class="zh">Day 11 → Raycast AI 的命令纠错</span><span class="en">Day 11 → Raycast AI's command correction</span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>

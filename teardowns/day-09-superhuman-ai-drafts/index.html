@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 9 · Superhuman's AI Drafting: The Draft as Calibration · AI Teardowns</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --accent: #2dd4bf; --border: #262d36; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 24px 80px; line-height: 1.8; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  a.back:hover { color: var(--accent); }
+  .day { font-size: 12px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin: 28px 0 8px; }
+  h1 { font-size: 32px; margin: 0 0 6px; letter-spacing: -0.5px; line-height: 1.4; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+  .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
+  .lang-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .lang-toggle button.active { background: var(--accent); color: #06281f; font-weight: 600; }
+  body[data-lang="zh"] .en { display: none; }
+  body[data-lang="en"] .zh { display: none; }
+  section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  section.card h2 { font-size: 19px; margin: 0 0 10px; }
+  section.card h2 .q { color: var(--accent); margin-right: 8px; }
+  section.card p, section.card li { font-size: 15px; color: var(--text); }
+  section.card ul { margin: 8px 0 0; padding-left: 20px; }
+  section.card li { margin-bottom: 8px; }
+  section.card li::marker { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .takeaway { border-left: 3px solid var(--accent); padding-left: 18px; margin: 28px 0; }
+  .takeaway p { font-size: 15px; margin: 6px 0; }
+  .interview { background: rgba(45,212,191,.07); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 24px; margin-top: 24px; }
+  .interview p { margin: 6px 0; font-size: 15px; }
+  footer { margin-top: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  code { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: 13px; }
+</style>
+</head>
+<body data-lang="zh">
+<div class="wrap">
+  <a class="back" href="../../index.html">← <span class="zh">全部拆解</span><span class="en">All teardowns</span></a>
+  <div class="day">Day 9 · 2026-10-21
+  <h1 class="zh">Superhuman 的 AI 撰写邮件：草稿态是最强的信任校准</h1>
+  <h1 class="en">Superhuman's AI Drafting: The Draft State as Trust Calibration</h1>
+  <p class="lede zh">今天拆什么：Superhuman 里敲几个短语（甚至一行字），AI 就写完一整封邮件 —— 但生成物直接落在可编辑的撰写窗口里，它永远是"草稿"，从来不是"已发送的邮件"。</p>
+  <p class="lede en">What we're tearing down: in Superhuman, type a few phrases (even one line) and the AI writes the whole email — but the output lands directly in the editable compose window. It is always a "draft", never a "sent email".</p>
+
+  <div class="lang-toggle">
+    <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button><button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <section class="card">
+    <h2><span class="q">①</span><span class="zh">Trust calibration 做得怎么样？</span><span class="en">How is trust calibrated?</span></h2>
+    <div class="zh">
+      <p>它的 calibration 是<strong>结构型</strong>的 —— 不靠任何标签，全靠"流程位置"：</p>
+      <ul>
+        <li><strong>草稿 vs 已发送是 email 世界里最强的信任信号</strong>。AI 输出和人工输入在视觉上没有区别（这看似反直觉 —— Copilot 还要用灰色草稿感区分呢），但 Superhuman 不需要区分，因为<strong>审查门天然存在</strong>：邮件发出去之前，你必须扫一眼、按一下发送键。calibration 被外包给了这条所有人都理解的流程线。</li>
+        <li><strong>输入-输出的"落差"本身就是 calibration</strong>：你只给了 5 个短语，它还你 5 段话 —— 补白量是肉眼可见的。扩写（expansion）是创意性风险，不是精确性风险，用户潜意识里会把这种输出当作"灵感初稿"而不是"事实陈述"。产品从不纠正这个直觉，因为这是对的。</li>
+        <li>对比 Day 6 的 Grammarly（颜色分级 + 每条附理由，给理由比给数字诚实）：Superhuman 连理由都不给 —— 因为邮件场景的出错代价（发错话、语气不当）全被"发送前必看一眼"这个门挡下了。Day 2 的 Notion AI 说"calibration 成本应与出错代价成正比" —— 这里的论证是：<strong>当流程里已经有一道必经的审查门，AI 自带的 calibration 标签就是多余成本，可以全省掉</strong>。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Its calibration is <strong>structural</strong> — no labels at all; it relies entirely on "position in the flow":</p>
+      <ul>
+        <li><strong>Draft vs. sent is the strongest trust signal in the email world.</strong> AI output looks visually identical to human input (counterintuitive — Copilot at least uses gray ghost-text to mark it) — but Superhuman doesn't need the distinction, because <strong>the review gate is built in</strong>: before anything goes out, you glance at it and hit send. Calibration is outsourced to a pipeline step everyone already understands.</li>
+        <li><strong>The input-output "gap" is itself a calibration signal</strong>: you gave it 5 phrases, it returned 5 paragraphs — the amount of filling-in is visible to the naked eye. Expansion is creative risk, not factual risk; users instinctively treat such output as "inspiration draft" rather than "factual statement". The product never corrects that instinct, because it's right.</li>
+        <li>Contrast with Day 6's Grammarly (color tiers + reasons per suggestion — reasons are more honest than numbers): Superhuman gives not even reasons — because email's failure cost (wrong words, wrong tone) is fully blocked by the "must-review-before-send" gate. Day 2's Notion AI said calibration cost should scale with failure cost — the argument here: <strong>when the flow already contains a mandatory review gate, AI-native calibration labels are pure overhead and can be dropped entirely</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">②</span><span class="zh">Graceful degradation 在哪？</span><span class="en">Where is graceful degradation?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>AI 写砸了，最差情况就是一封烂草稿 —— 删掉重写</strong>。降级没有专门设计，因为"没有 AI 辅助的写邮件"本身就是默认状态：AI 挂了 / 离线了 / 生成质量差，你回到的正是你本来就在的撰写窗口。核心任务（写邮件、发出去）<strong>从不断裂</strong>。</li>
+        <li>跟 Day 2 的 Notion AI 呼应：失败归零 —— 最差情况是"什么都没发生"（或者"什么都没生成"），而不是被推向一个错误的方向。这里更进一步：<strong>连"归零"都不需要显式处理</strong>，因为草稿态天然可丢弃。</li>
+        <li>还有一层降级藏在 tone/rephrase 里：语气不对 → 不用重跑整封，rephrase 改一段就行 —— 降级路径是"降精度不降级"（partial retry），而不是全有或全无。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>If the AI writes badly, the worst case is a bad draft — delete and rewrite.</strong> Degradation needs no special design, because "writing email without AI" is already the default state: if the AI is down, offline, or low-quality, you land back in the compose window you were in anyway. The core task (write, send) <strong>never breaks</strong>.</li>
+        <li>Echoing Day 2's Notion AI: failure degrades to zero — worst case is "nothing happened" (or "nothing generated"), never being pushed toward a wrong direction. This goes one step further: <strong>not even "degrading to zero" needs explicit handling</strong>, because a draft is naturally disposable.</li>
+        <li>One more degradation path hides in tone/rephrase: wrong tone → don't re-run the whole email, just rephrase one paragraph — the fallback is "lower precision, not full failure" (partial retry) instead of all-or-nothing.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="q">③</span><span class="zh">人有没有 override 的机会？</span><span class="en">Can the human override?</span></h2>
+    <div class="zh">
+      <ul>
+        <li><strong>没有"接受/拒绝"按钮 —— 因为编辑器本身就是仲裁界面</strong>。生成物落在你的撰写窗口里，跟你自己敲的字没有区别：光标点进去就能改，改的粒度是字符级的。override 的成本 = 正常写邮件的成本 —— 这是本系列里 override 最便宜的一次。</li>
+        <li><strong>发送按钮是唯一的承诺门（commitment gate）</strong>。Day 4 的 Canvas 有逐处接受/拒绝 + 版本回滚，Day 6 的 Grammarly 有逐条卡片 —— Superhuman 把这些全省了，只留一道门：按下去的那一刻，责任 100% 归你。产品从不标记"这是 AI 写的" —— <strong>信任归属的转移不是靠标注，是靠"发送"这个不可逆动作完成的</strong>。</li>
+        <li>对比 Day 1 的 Copilot ghost text：同血统（生成物落在你的编辑器里、用编辑动作仲裁），但 Copilot 需要 Tab/Esc 的显式二选一，因为代码补全的采纳是"无声"的 —— 采纳了你都未必记得。而邮件有发送门，采纳不可能是无声的。所以规则是：<strong>override 控件的重量，应该跟"无声采纳"的风险成正比</strong>。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul>
+        <li><strong>No accept/dismiss button — because the editor itself is the arbitration interface.</strong> The output lands in your compose window, indistinguishable from your own typing: put the cursor in and edit, at character-level granularity. Override cost = the cost of writing email normally — the cheapest override in this whole series.</li>
+        <li><strong>The send button is the single commitment gate.</strong> Day 4's Canvas has per-change accept/reject + version rollback; Day 6's Grammarly has per-card actions — Superhuman skips all of that and keeps one gate: the moment you press it, responsibility is 100% yours. The product never marks "this was AI-written" — <strong>trust ownership transfers not via labeling, but via the irreversible act of sending</strong>.</li>
+        <li>Contrast with Day 1's Copilot ghost text: same bloodline (output lands in your editor, arbitration happens through editing), but Copilot needs the explicit Tab/Esc binary choice, because code-completion adoption is "silent" — you might not even remember you accepted. Email has a send gate, so adoption can never be silent. Hence the rule: <strong>the weight of override controls should scale with the risk of silent adoption</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <p class="zh"><strong>设计师 takeaway：</strong>当流程里有一道必经的审查门（发送、发布、上线），AI 输出的校准可以不靠置信度标签 —— <strong>草稿态本身就是最强的 calibration，发送键就是唯一的承诺门</strong>。可迁移到 AI Hub：AI 生成的 SEO 标题/元描述这类"要发布"的内容，永远先落在可编辑的草稿位，不可一键直发；override 控件的重量跟"无声采纳"的风险成正比 —— 越不可逆的动作，越要让 AI 停在 draft 态。</p>
+    <p class="en"><strong>Designer takeaway:</strong> When the flow contains a mandatory review gate (send, publish, ship), AI output calibration doesn't need confidence labels — <strong>the draft state itself is the strongest calibration, and the send button is the single commitment gate</strong>. Transferable to AI Hub: AI-generated "about-to-publish" content (SEO titles, meta descriptions) must always land in an editable draft slot first, never one-click publish; the weight of override controls should scale with the risk of silent adoption — the more irreversible the action, the more the AI must stay in draft state.</p>
+  </div>
+
+  <div class="interview">
+    <p class="zh">🎙️ <strong>面试怎么讲：</strong>Superhuman 的 AI 写邮件不做置信度标注 —— 它不需要。生成物直接落在撰写窗口里，永远是草稿；发送按钮才是唯一的信任门。我的原则是：override 控件的重量跟"无声采纳"的风险成正比 —— 流程里已经有必经审查门的地方，AI 标签是多余成本，全省掉；越不可逆的动作，越要让 AI 停在 draft 态。</p>
+    <p class="en">🎙️ <strong>How to say it in an interview:</strong> Superhuman's AI email writing carries no confidence labels — it doesn't need them. The output lands directly in the compose window, forever a draft; the send button is the only trust gate. My rule: the weight of override controls scales with the risk of silent adoption — where the flow already has a mandatory review gate, AI labels are pure overhead and can be dropped; the more irreversible the action, the more the AI must stay in draft state.</p>
+  </div>
+
+  <footer>
+    <a href="../day-08-linear-ai-summaries/index.html">← <span class="zh">Day 8 · Linear 的 AI issue 总结</span><span class="en">Day 8 · Linear's AI Issue Summaries</span></a>
+    <span class="zh">Day 10 → Arc Search "Browse for me"</span><span class="en">Day 10 → Arc Search "Browse for me"</span>
+  </footer>
+</div>
+<script>
+function setLang(l){ document.body.dataset.lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en'; }
+</script>
+</body>
+</html>
